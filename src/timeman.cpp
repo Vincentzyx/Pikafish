@@ -27,6 +27,8 @@
 #include "ucioption.h"
 
 namespace Stockfish {
+int timeman_cpp_96_0 = 9, timeman_cpp_96_1 = 142, timeman_cpp_96_2 = 100, timeman_cpp_100_0 = 344, timeman_cpp_100_1 = 2, timeman_cpp_100_2 = 45, timeman_cpp_101_0 = 39, timeman_cpp_101_1 = 31, timeman_cpp_101_2 = 25, timeman_cpp_103_0 = 155, timeman_cpp_103_1 = 30, timeman_cpp_103_2 = 45, timeman_cpp_104_0 = 2, timeman_cpp_106_0 = 65, timeman_cpp_106_1 = 136, timeman_cpp_119_0 = 81;
+TUNE(timeman_cpp_96_0, timeman_cpp_96_1, timeman_cpp_96_2, timeman_cpp_100_0, timeman_cpp_100_1, timeman_cpp_100_2, timeman_cpp_101_0, timeman_cpp_101_1, timeman_cpp_101_2, timeman_cpp_103_0, timeman_cpp_103_1, timeman_cpp_103_2, timeman_cpp_104_0, timeman_cpp_106_0, timeman_cpp_106_1, timeman_cpp_119_0);
 
 TimePoint TimeManagement::optimum() const { return optimumTime; }
 TimePoint TimeManagement::maximum() const { return maximumTime; }
@@ -94,17 +96,17 @@ void TimeManagement::init(Search::LimitsType& limits,
     if (limits.movestogo == 0)
     {
         // Use extra time with larger increments
-        double optExtra = std::clamp(0.9 + 14.2 * limits.inc[us] / limits.time[us], 1.0, 1.00);
+        double optExtra = std::clamp((timeman_cpp_96_0 / 10.0) + (timeman_cpp_96_1 / 10.0) * limits.inc[us] / limits.time[us], 1.0, (timeman_cpp_96_2 / 100.0));
 
         // Calculate time constants based on current time left.
         double optConstant =
-          std::min(0.00344 + 0.0002 * std::log10(limits.time[us] / 1000.0), 0.0045);
-        double maxConstant = std::max(3.9 + 3.1 * std::log10(limits.time[us] / 1000.0), 2.5);
+          std::min((timeman_cpp_100_0 / 100000.0) + (timeman_cpp_100_1 / 10000.0) * std::log10(limits.time[us] / 1000.0), (timeman_cpp_100_2 / 10000.0));
+        double maxConstant = std::max((timeman_cpp_101_0 / 10.0) + (timeman_cpp_101_1 / 10.0) * std::log10(limits.time[us] / 1000.0), (timeman_cpp_101_2 / 10.0));
 
-        optScale = std::min(0.0155 + std::pow(ply + 3.0, 0.45) * optConstant,
-                            0.2 * limits.time[us] / double(timeLeft))
+        optScale = std::min((timeman_cpp_103_0 / 10000.0) + std::pow(ply + (timeman_cpp_103_1 / 10.0), (timeman_cpp_103_2 / 100.0)) * optConstant,
+                            (timeman_cpp_104_0 / 10.0) * limits.time[us] / double(timeLeft))
                  * optExtra;
-        maxScale = std::min(6.5, maxConstant + ply / 13.6);
+        maxScale = std::min((timeman_cpp_106_0 / 10.0), maxConstant + ply / (timeman_cpp_106_1 / 10.0));
     }
 
     // x moves in y seconds (+ z increment)
@@ -117,7 +119,7 @@ void TimeManagement::init(Search::LimitsType& limits,
     // Limit the maximum possible time for this move
     optimumTime = TimePoint(optScale * timeLeft);
     maximumTime =
-      TimePoint(std::min(0.81 * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
+      TimePoint(std::min((timeman_cpp_119_0 / 100.0) * limits.time[us] - moveOverhead, maxScale * optimumTime)) - 10;
 
     if (options["Ponder"])
         optimumTime += optimumTime / 4;
