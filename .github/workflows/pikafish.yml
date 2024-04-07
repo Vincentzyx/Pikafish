@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - HalfKAv2_hm
 
 jobs:
   Pikafish:
